@@ -1,0 +1,7 @@
+{
+    "mode": "dense",
+    "fps": 30,
+    "remember_last_video": true,
+    "clear_on_exit": true,
+    "hide_cursor": true
+}

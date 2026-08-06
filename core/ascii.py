@@ -1,7 +1,7 @@
 from PIL import Image
 
-from charset import CHARSETS
-from imagefx import improve
+from core.charset import CHARSETS
+from core.imagefx import improve
 
 
 def frame_to_ascii(frame, width, height, mode):
