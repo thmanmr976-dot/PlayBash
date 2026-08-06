@@ -8,3 +8,21 @@ __pycache__/
 
 .venv/
 venv/
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
