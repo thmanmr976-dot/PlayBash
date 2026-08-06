@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from pathlib import Path
 
 from cli.parser import create_parser
@@ -13,7 +15,7 @@ from library import (
     set_last_video,
 )
 
-from settings import (
+from settings import get (
     set,
     reset,
     all,

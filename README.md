@@ -117,3 +117,10 @@ v0.6.0
 
 MIT License
 
+playbash run video.mp4
+playbash run
+playbash add video.mp4
+playbash list
+playbash remove 1
+playbash config
+playbash version

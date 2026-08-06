@@ -1,7 +1,7 @@
 from PIL import Image
 
-from core.charset import CHARSETS
-from core.imagefx import improve
+from playbash.core.charset import CHARSETS
+from playbash.core.imagefx import improve
 
 
 def frame_to_ascii(frame, width, height, mode):

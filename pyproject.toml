@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "playbash"
+version = "0.7.0-dev"
+description = "ASCII video player for the terminal."
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "opencv-python",
+    "Pillow"
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["playbash*"]
+
+[project.scripts]
+playbash = "playbash.__main__:main"

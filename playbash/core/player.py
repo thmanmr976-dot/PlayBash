@@ -3,9 +3,10 @@ import time
 
 import cv2
 
-from settings import get
-from core.ascii import frame_to_ascii
-from core.renderer import (
+from playbash.core.input import Keyboard
+from playbash.settings import get
+from playbash.core.ascii import frame_to_ascii
+from playbash.core.renderer import (
     clear,
     hide_cursor,
     render,
@@ -13,16 +14,13 @@ from core.renderer import (
 )
 
 
-
 def play(video_path, mode=None, fps=None):
-
 
     if mode is None:
         mode = get("mode")
 
     if fps is None:
         fps = get("fps")
-
 
     video = cv2.VideoCapture(video_path)
 
@@ -42,7 +40,9 @@ def play(video_path, mode=None, fps=None):
 
     try:
 
-        while True:
+       with Keyboard() as keyboard:
+
+          while True:
 
             start = time.perf_counter()
 
@@ -64,6 +64,11 @@ def play(video_path, mode=None, fps=None):
             )
 
             render(ascii_frame)
+
+            key = keyboard.pressed()
+
+            if key == "q":
+                break
 
             elapsed = time.perf_counter() - start
 

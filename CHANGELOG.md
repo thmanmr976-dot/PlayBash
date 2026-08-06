@@ -1,24 +1,14 @@
-# Changelog
+# v0.7.0
 
-## v0.6.0
+## Added
+- Python package structure
+- CLI entry point (`playbash`)
+- Settings system
+- Video library management
+- Default configuration
+- Quit playback with `Q`
 
-### Added
-
-* Command line interface
-* Video library
-* Remember last played video
-* Configuration system
-* Settings command
-* Multiple rendering modes
-
-### Improved
-
-* Project structure
-* Playback performance
-* Cleaner renderer
-
-### Fixed
-
-* Slow playback
-* FPS timing
-* Various CLI issues
+## Improved
+- Cleaner project structure
+- Better imports
+- Better command handling

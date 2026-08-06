@@ -1,8 +1,10 @@
 from PIL import ImageEnhance
 
-from config import CONTRAST
-from config import BRIGHTNESS
-from config import SHARPNESS
+from playbash.core.config import (
+    CONTRAST,
+    BRIGHTNESS,
+    SHARPNESS,
+)
 
 
 def improve(img):

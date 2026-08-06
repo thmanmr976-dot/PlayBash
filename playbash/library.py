@@ -1,24 +1,14 @@
 import json
-import os
+from pathlib import Path
 
-LIBRARY_FILE = "data/library.json"
+DATA_DIR = Path(__file__).parent / "data"
+LIBRARY_FILE = DATA_DIR / "library.json"
 
-
-def load_library():
-    if not os.path.exists(LIBRARY_FILE):
-        return {
-            "last_video": "",
-            "videos": []
-        }
-
-import json
-import os
-
-LIBRARY_FILE = "data/library.json"
+DATA_DIR.mkdir(exist_ok=True)
 
 
 def load_library():
-    if not os.path.exists(LIBRARY_FILE):
+    if not LIBRARY_FILE.exists():
         return {
             "last_video": "",
             "videos": []
@@ -34,42 +24,32 @@ def save_library(data):
 
 
 def add_video(path):
-
     data = load_library()
 
     if path in data["videos"]:
         return False
 
     data["videos"].append(path)
-
     save_library(data)
-
     return True
 
 
 def list_videos():
-
-    data = load_library()
-
-    return data["videos"]
+    return load_library()["videos"]
 
 
 def remove_video(index):
-
     data = load_library()
 
     if index < 0 or index >= len(data["videos"]):
         return False
 
     data["videos"].pop(index)
-
     save_library(data)
-
     return True
 
 
 def clear_library():
-
     save_library({
         "last_video": "",
         "videos": []
@@ -77,7 +57,6 @@ def clear_library():
 
 
 def get_video(index):
-
     data = load_library()
 
     if index < 0 or index >= len(data["videos"]):
@@ -87,16 +66,10 @@ def get_video(index):
 
 
 def set_last_video(path):
-
     data = load_library()
-
     data["last_video"] = path
-
     save_library(data)
 
 
 def get_last_video():
-
-    data = load_library()
-
-    return data["last_video"]
+    return load_library()["last_video"]

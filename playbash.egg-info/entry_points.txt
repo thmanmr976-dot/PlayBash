@@ -1,0 +1,2 @@
+[console_scripts]
+playbash = playbash.__main__:main

@@ -1,7 +1,13 @@
 import json
 import os
 
-CONFIG_FILE = "data/config.json"
+from pathlib import Path
+
+DATA_DIR = Path(__file__).parent / "data"
+
+CONFIG_FILE = DATA_DIR / "config.json"
+
+DATA_DIR.mkdir(exist_ok=True)
 
 DEFAULT_CONFIG = {
     "mode": "classic",
