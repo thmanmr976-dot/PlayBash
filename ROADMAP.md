@@ -1,35 +1,103 @@
 # PlayBash Roadmap
 
-## v0.7
+This roadmap describes the planned direction of PlayBash.
 
-* Playback controls
-* Pause / Resume
-* Quit with Q
-* Restart video
-* Better keyboard handling
+## ✅ Completed
+
+### v0.5
+
+* [x] Basic ASCII video playback
+* [x] Terminal rendering
+* [x] FPS control
+* [x] Multiple rendering modes
+
+### v0.6
+
+* [x] Video library
+* [x] Persistent configuration
+* [x] Last-played video
+* [x] CLI commands
+* [x] Version command
+
+### v0.7
+
+* [x] Python package structure
+* [x] `pyproject.toml`
+* [x] Installation script
+* [x] Global PlayBash command
+* [x] Improved project organization
+
+### v0.8
+
+* [x] Run PlayBash from any directory
+* [x] Automatic virtual environment setup
+* [x] Automatic dependency installation
+* [x] Global launcher
+* [x] Improved Linux installation experience
+* [x] Updated package structure
 
 ---
 
-## v0.8
+# 🚧 v0.9 — Planned
 
-* Status bar
-* Install command
-* Dynamic terminal resize
-* Switch rendering mode while playing
+The next development cycle will focus on improving the user experience and playback controls.
+
+### Playback
+
+* [ ] Pause and resume playback
+* [ ] Quit playback with a keyboard shortcut
+* [ ] Better playback controls
+* [ ] Improved frame timing
+
+### Library
+
+* [ ] Improve library management
+* [ ] Better handling of invalid or missing video files
+* [ ] More useful library information
+
+### CLI
+
+* [ ] Improve command help
+* [ ] Improve error messages
+* [ ] Add more convenient command options
 
 ---
 
-## v0.9
+# 🔮 Future
 
-* Themes
-* Better image processing
-* Plugin system
+These features are ideas for future versions and are not currently scheduled.
+
+### Rendering
+
+* [ ] Improve ASCII image quality
+* [ ] More rendering modes
+* [ ] Better brightness and contrast handling
+* [ ] Terminal capability detection
+
+### Performance
+
+* [ ] Reduce CPU usage
+* [ ] Improve frame processing performance
+* [ ] Optimize large videos
+
+### User Experience
+
+* [ ] Better installation experience
+* [ ] Improved documentation
+* [ ] More helpful configuration tools
+
+### Distribution
+
+* [ ] Easier installation packages
+* [ ] Distribution-specific packages where appropriate
+* [ ] Consider publishing PlayBash through Python package indexes
 
 ---
 
-## v1.0
+## Development Philosophy
 
-* Stable release
-* Complete documentation
-* Cross-platform improvements
-* Public release
+PlayBash is developed incrementally.
+
+New features are tested before becoming part of a stable release. The roadmap may change as the project evolves.
+
+> Features listed under **Future** are ideas, not promises.
