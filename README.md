@@ -4,6 +4,12 @@
 
 > 🚧 **Current version: v0.8.0**
 
+## Demo
+
+[![PlayBash playing ASCII video in the terminal and inside the Fastfetch logo](docs/media/playbash-demo.gif)](docs/media/playbash-demo.mp4)
+
+[Watch the MP4](docs/media/playbash-demo.mp4)
+
 ## ✨ Features
 
 * 🎬 Play videos directly in the terminal
