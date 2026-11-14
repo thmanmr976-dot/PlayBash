@@ -41,32 +41,20 @@
       <div class="gallery">
         <figure><img src="media/classic.png" width="1020" height="1040" loading="lazy" alt="A face and hair drawn with the classic ASCII palette"><figcaption><code>classic</code><span>Compact ASCII palette</span></figcaption></figure>
         <figure><img src="media/dense.png" width="1020" height="1040" loading="lazy" alt="The same face drawn with dense ASCII punctuation, letters, and digits"><figcaption><code>dense</code><span>Printable ASCII palette</span></figcaption></figure>
-        <figure><img src="media/blocks.png" width="1020" height="1040" loading="lazy" alt="The same face drawn with four shades of block characters"><figcaption><code>blocks</code><span>Shaded block characters</span></figcaption></figure>
+        <figure><img src="media/blocks.png" width="1020" height="1040" loading="lazy" alt="The same face drawn with block characters"><figcaption><code>blocks</code><span>Shaded block characters</span></figcaption></figure>
       </div>
-      <figure class="chart" aria-labelledby="chart-title" aria-describedby="chart-note">
-        <figcaption id="chart-title">Symbols per mode</figcaption>
-        <p id="chart-note"><code>dense</code> has the widest palette. Counts exclude spaces and come from the renderer’s character sets.</p>
-        <div class="bars" aria-hidden="true">
-          <div><code>dense</code><span class="track"><span style="--count:94"></span></span><b>94</b></div>
-          <div><code>hex</code><span class="track"><span style="--count:16"></span></span><b>16</b></div>
-          <div><code>classic</code><span class="track"><span style="--count:13"></span></span><b>13</b></div>
-          <div><code>blocks</code><span class="track"><span style="--count:4"></span></span><b>4</b></div>
-          <div><code>matrix</code><span class="track"><span style="--count:4"></span></span><b>4</b></div>
-          <div><code>binary</code><span class="track"><span style="--count:2"></span></span><b>2</b></div>
-          <div class="axis"><span></span><span><span>0</span><span>50</span><span>100</span></span></div>
-        </div>
-        <details>
-          <summary>View symbol counts as a table</summary>
-          <table>
-            <thead><tr><th scope="col">Mode</th><th scope="col">Symbols excluding spaces</th></tr></thead>
-            <tbody>
-              <tr><th scope="row">Dense</th><td>94</td></tr><tr><th scope="row">Hex</th><td>16</td></tr>
-              <tr><th scope="row">Classic</th><td>13</td></tr><tr><th scope="row">Blocks</th><td>4</td></tr>
-              <tr><th scope="row">Matrix</th><td>4</td></tr><tr><th scope="row">Binary</th><td>2</td></tr>
-            </tbody>
-          </table>
-        </details>
-      </figure>
+      <table class="symbol-counts">
+        <caption>Symbols per mode (excluding spaces)</caption>
+        <thead><tr><th scope="col">Mode</th><th scope="col">Symbols</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>dense</code></th><td>94</td></tr>
+          <tr><th scope="row"><code>classic</code></th><td>13</td></tr>
+          <tr><th scope="row"><code>hex</code></th><td>16</td></tr>
+          <tr><th scope="row"><code>blocks</code></th><td>4</td></tr>
+          <tr><th scope="row"><code>matrix</code></th><td>4</td></tr>
+          <tr><th scope="row"><code>binary</code></th><td>2</td></tr>
+        </tbody>
+      </table>
     </section>
 
     <section id="install" class="section" aria-labelledby="install-title">

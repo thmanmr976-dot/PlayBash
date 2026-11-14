@@ -12,7 +12,6 @@
   --terminal: oklch(.14 .008 65);
   --terminal-ink: oklch(.95 .018 75);
   --terminal-accent: oklch(.82 .12 48);
-  --track: light-dark(oklch(.88 .035 64), oklch(.37 .022 65));
   --font: "Instrument Sans", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, monospace;
   --step: .25rem;
@@ -58,7 +57,7 @@ a { transition: color var(--fast) var(--ease); }
   .button:hover { background: var(--accent-hover); color: var(--button-text); }
 }
 .button:active { background: var(--accent-press); }
-.demo, .gallery figure, .chart, .commands > div { min-width: 0; border: var(--border) solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.demo, .gallery figure, .commands > div { min-width: 0; border: var(--border) solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .terminal-label { display: flex; gap: calc(var(--step) * 3); align-items: center; font: var(--small)/1.6 var(--mono); background: var(--terminal); color: var(--terminal-ink); border-radius: var(--radius) var(--radius) 0 0; padding: calc(var(--step) * 3) calc(var(--step) * 4); }
 .terminal-label span { color: var(--terminal-accent); }
 video, img { display: block; width: 100%; height: auto; }
@@ -71,18 +70,7 @@ video { aspect-ratio: 4 / 3; background: var(--terminal); }
 .gallery img { border-radius: var(--radius) var(--radius) 0 0; }
 .gallery figcaption { display: grid; }
 .gallery code { color: var(--ink); font-weight: 700; }
-.chart, .commands > div { padding: calc(var(--step) * 4); }
-.chart { margin-top: calc(var(--step) * 6); }
-.chart figcaption { color: var(--ink); font-weight: 750; font-size: var(--subtitle); }
-.bars { margin-block: calc(var(--step) * 5); }
-.bars > div { display: grid; grid-template-columns: 7ch minmax(0, 1fr) 3ch; gap: calc(var(--step) * 3); align-items: center; margin-block: calc(var(--step) * 2); font-variant-numeric: tabular-nums; }
-.bars b { text-align: end; }
-.track { display: block; background: var(--track); height: calc(var(--step) * 3); }
-.track > span { display: block; height: 100%; width: calc(var(--count) * 1%); background: var(--accent); }
-.axis > span:nth-child(2) { display: flex; justify-content: space-between; font-size: var(--small); color: var(--muted); }
-summary { cursor: pointer; color: var(--accent); min-height: var(--control); align-content: center; }
-table { width: 100%; border-collapse: collapse; text-align: start; }
-th, td { padding: var(--step) calc(var(--step) * 2); text-align: start; border-bottom: var(--border) solid var(--line); }
+.commands > div { padding: calc(var(--step) * 4); }
 .commands p { margin-top: calc(var(--step) * 2); }
 code, kbd { font-family: var(--mono); overflow-wrap: anywhere; }
 pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--terminal); color: var(--terminal-ink); padding: calc(var(--step) * 3); border-radius: var(--radius); font-size: var(--small); }
@@ -93,3 +81,8 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--terminal
   .section-head { display: flex; justify-content: space-between; align-items: end; gap: calc(var(--step) * 4); }
 }
 @media (prefers-reduced-motion: reduce) { :root { --fast: 0ms; } }
+
+.symbol-counts { width: 100%; margin-top: calc(var(--step) * 6); border-collapse: collapse; background: var(--surface); }
+.symbol-counts caption { padding-bottom: calc(var(--step) * 2); text-align: start; font-weight: 750; }
+.symbol-counts th, .symbol-counts td { padding: calc(var(--step) * 2) calc(var(--step) * 4); text-align: start; border-bottom: var(--border) solid var(--line); }
+.symbol-counts th:last-child, .symbol-counts td { text-align: end; font-variant-numeric: tabular-nums; }
