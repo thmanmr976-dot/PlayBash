@@ -3,7 +3,7 @@
 set -e
 
 echo "===================================="
-echo "      PlayBash Installer v0.8"
+echo "      PlayBash Installer v0.9"
 echo "===================================="
 echo
 

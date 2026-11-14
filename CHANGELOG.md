@@ -2,7 +2,14 @@
 
 All notable changes to PlayBash are documented here.
 
-## [v0.8.0] — Current
+## [v0.9.0-dev]
+
+* Six ASCII rendering modes with optional video colors.
+* Automatic replay, improved quit handling, and FFmpeg decoding fallback.
+* Animated Fastfetch logos with framing controls and saved defaults.
+* Project demo and GitHub Pages site.
+
+## [v0.8.0]
 
 ### Added
 
