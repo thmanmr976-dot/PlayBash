@@ -2,7 +2,7 @@
 
 All notable changes to PlayBash are documented here.
 
-## [v0.9.0-dev]
+## [v0.9.0]
 
 * Six ASCII rendering modes with optional video colors.
 * Automatic replay, improved quit handling, and FFmpeg decoding fallback.

@@ -167,7 +167,7 @@ def main():
 
     elif args.command == "version":
 
-        print("PlayBash v0.9.0-dev")
+        print("PlayBash v0.9.0")
 
     else:
 
