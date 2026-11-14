@@ -1,268 +1,89 @@
+![PlayBash — ASCII video in your Linux terminal](.github/assets/banner.svg)
+
 # PlayBash
 
-**PlayBash** is a terminal-based video player that converts videos into ASCII art and plays them directly inside your Linux terminal.
+PlayBash plays local videos as ASCII art in a Linux terminal and can turn the Fastfetch logo into a looping clip.
 
-> 🚧 **Current version: v0.8.0**
+[Project site preview](docs/index.html) · [Watch the demo (MP4)](docs/media/playbash-demo.mp4)
 
 ## Demo
 
-[![PlayBash playing ASCII video in the terminal and inside the Fastfetch logo](docs/media/playbash-demo.gif)](docs/media/playbash-demo.mp4)
+[![PlayBash rendering an animated Fastfetch logo](docs/media/demo-poster.webp)](docs/media/playbash-demo.mp4)
 
-[Watch the MP4](docs/media/playbash-demo.mp4)
+| Classic | Dense | Blocks |
+| --- | --- | --- |
+| ![Classic ASCII glyphs framing a face](docs/media/classic.png) | ![Dense ASCII glyphs preserving hair detail](docs/media/dense.png) | ![Shaded block characters rendering the same frame](docs/media/blocks.png) |
 
-## ✨ Features
+## Features
 
-* 🎬 Play videos directly in the terminal
-* 🖥️ Automatically adapts to the terminal size
-* 🎨 Multiple ASCII rendering modes
-* 📚 Built-in video library
-* ⚙️ Configurable playback FPS and rendering mode
-* 📌 Remembers the last played video
-* 🐍 Python-based
-* 📦 Easy installation with `install.sh`
-* 🌍 Works across Linux distributions with Python 3
-* 🚀 Run `playbash` from any directory after installation
+- Six rendering modes: `classic`, `dense`, `blocks`, `matrix`, `hex`, and `binary`.
+- Optional video colors, configurable frame rate, and automatic replay.
+- A local video library with numbered entries and a shortcut to the last played video.
+- Animated Fastfetch logos with zoom, positioning, and a saved default.
 
-## 📦 Installation
+## Quickstart
 
-### 1. Clone the repository
+Use Linux with Bash, Git, and Python 3.10 or newer with pip and venv. The installer creates `.venv` and a launcher at `~/.local/bin/playbash`.
 
 ```bash
 git clone https://github.com/thmanmr976-dot/PlayBash.git
-```
-
-### 2. Enter the project directory
-
-```bash
 cd PlayBash
-```
-
-### 3. Run the installer
-
-```bash
-./install.sh
-```
-
-The installer will:
-
-* Check for Python 3
-* Check for pip
-* Create a virtual environment
-* Install PlayBash and its dependencies
-* Create the `playbash` command
-* Configure the command for use from any directory
-
-After installation:
-
-```bash
+bash install.sh
+export PATH="$HOME/.local/bin:$PATH"
 playbash version
 ```
 
-## 🎮 Usage
-
-### Play a video
+The last command prints the installed version. Replace `/path/to/video.mp4` below with a local clip, then press `q` to stop playback.
 
 ```bash
-playbash run /path/to/video.mp4
+playbash run "/path/to/video.mp4" --mode dense
 ```
 
-You can also play a video from the library:
+FFmpeg and ffprobe provide a fallback when OpenCV cannot decode a clip. Animated logos also require Fastfetch.
+
+## Video library
 
 ```bash
-playbash run 1
-```
-
-### Play the last video
-
-```bash
-playbash run
-```
-
-### Add a video to the library
-
-```bash
-playbash add /path/to/video.mp4
-```
-
-### List videos
-
-```bash
+playbash add "/path/to/video.mp4"
 playbash list
-```
-
-Example:
-
-```text
-PlayBash Library
-
-1. video.mp4
-2. movie.webm
-3. animation.mkv
-```
-
-### Remove a video
-
-```bash
+playbash run 1
+playbash run
 playbash remove 1
 ```
 
-### Clear the library
+`playbash run` with no argument reopens the last video played. `playbash clear` empties the library.
+
+## Animated Fastfetch logo
 
 ```bash
-playbash clear
+playbash fastfetch 1 --adjust
 ```
 
-## 🎨 Rendering Modes
+Use the arrow keys to move the clip and `+` or `-` to zoom. Press Enter to save it as the default logo or `q` to close the preview. You can also pass a video path or preview without `--adjust`.
 
-PlayBash supports multiple rendering modes:
+The first save installs a per-user Fastfetch launcher and integrates it with Bash startup. Open a fresh Bash terminal and run `fastfetch` to see the saved logo. `playbash fastfetch` also opens it directly. Use `playbash fastfetch --stop` to stop the current animation and `playbash fastfetch --reset-logo` to restore the original logo for future calls.
 
-* `classic`
-* `dense`
-* `blocks`
-* `matrix`
-* `hex`
-* `binary`
-
-Select a mode when playing a video:
-
-```bash
-playbash run video.mp4 --mode dense
-```
-
-Or configure the default mode:
-
-```bash
-playbash config --mode dense
-```
-
-## ⚙️ Configuration
-
-View the current configuration:
+## Configuration
 
 ```bash
 playbash config
-```
-
-Change the default FPS:
-
-```bash
-playbash config --fps 30
-```
-
-Change the default rendering mode:
-
-```bash
-playbash config --mode classic
-```
-
-Reset the configuration:
-
-```bash
+playbash config --mode dense --fps 24 --color
+playbash config --no-loop
 playbash config --reset
 ```
 
-## 📋 Command Reference
+The default mode is `classic`, regular playback is set to 30 FPS, replay is on, and colors are off. Set `--loop` or `--no-color` independently. A single `run` can override the configured mode and frame rate with `--mode` and `--fps`.
 
-| Command                         | Description                |
-| ------------------------------- | -------------------------- |
-| `playbash run <video>`          | Play a video               |
-| `playbash run <index>`          | Play a library video       |
-| `playbash run`                  | Play the last video        |
-| `playbash add <video>`          | Add a video to the library |
-| `playbash list`                 | List library videos        |
-| `playbash remove <index>`       | Remove a library video     |
-| `playbash clear`                | Clear the library          |
-| `playbash config`               | View configuration         |
-| `playbash config --mode <mode>` | Change rendering mode      |
-| `playbash config --fps <fps>`   | Change FPS                 |
-| `playbash config --reset`       | Reset configuration        |
-| `playbash version`              | Show PlayBash version      |
+## Development
 
-## 🛠️ Requirements
+After installation, run the tests with `.venv/bin/python -m unittest discover -s tests -q`. The Fastfetch integration tests use Fastfetch, FFmpeg, ffprobe, and Bash. For changes, describe the terminal, rendering mode, and playback steps in the pull request.
 
-* Linux
-* Python 3
-* pip
-* A terminal capable of displaying standard text/ANSI output
+## Site preview
 
-PlayBash automatically installs its Python dependencies during installation.
-
-## 📁 Project Structure
-
-```text
-PlayBash/
-├── playbash/
-│   ├── cli/
-│   │   └── parser.py
-│   ├── core/
-│   │   ├── ascii.py
-│   │   ├── charset.py
-│   │   ├── config.py
-│   │   ├── imagefx.py
-│   │   ├── input.py
-│   │   ├── player.py
-│   │   └── renderer.py
-│   ├── data/
-│   │   ├── config.json
-│   │   └── library.json
-│   ├── library.py
-│   ├── settings.py
-│   └── __main__.py
-│
-├── install.sh
-├── pyproject.toml
-├── README.md
-├── CHANGELOG.md
-└── ROADMAP.md
-```
-
-## 🧪 Development
-
-Clone the repository:
+From the repository root:
 
 ```bash
-git clone https://github.com/thmanmr976-dot/PlayBash.git
-cd PlayBash
+python3 -m http.server 8000 --bind 127.0.0.1 --directory docs
 ```
 
-Create a virtual environment:
-
-```bash
-python3 -m venv .venv
-```
-
-Activate it:
-
-```bash
-source .venv/bin/activate
-```
-
-Install PlayBash in editable mode:
-
-```bash
-python -m pip install -e .
-```
-
-Run the development version:
-
-```bash
-python -m playbash version
-```
-
-## 🗺️ Roadmap
-
-See [ROADMAP.md](ROADMAP.md) for planned features and future development.
-
-## 📜 Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for version history.
-
-## 🤝 Contributing
-
-PlayBash is an evolving project.
-
-Bug reports, ideas, improvements, and contributions are welcome.
-
-## 📄 License
-
-License information will be added in a future release.
+Open [the local preview](http://127.0.0.1:8000/). After review and merge, select `main` and `/docs` as the GitHub Pages publishing source. The [project Pages URL](https://thmanmr976-dot.github.io/PlayBash/) becomes available once Pages is enabled.

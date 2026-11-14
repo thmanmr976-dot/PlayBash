@@ -24,6 +24,9 @@ def save_library(data):
 
 
 def add_video(path):
+    path = str(Path(path).expanduser().resolve())
+    if not Path(path).is_file():
+        raise ValueError(f"Video not found: {path}")
     data = load_library()
 
     if path in data["videos"]:

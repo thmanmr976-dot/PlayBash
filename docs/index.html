@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Play local videos as ASCII art in your Linux terminal and animate your Fastfetch logo with PlayBash.">
+  <title>PlayBash — ASCII video in your terminal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="shell masthead">
+    <a class="wordmark" href="#main"><span aria-hidden="true">&gt;_</span> PlayBash</a>
+    <nav aria-label="Main navigation">
+      <a href="#modes">Modes</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/thmanmr976-dot/PlayBash">GitHub ↗</a>
+    </nav>
+  </header>
+  <main id="main" class="shell">
+    <section class="hero" aria-labelledby="intro">
+      <div class="hero-copy">
+        <h1 id="intro">Video in<br>your terminal<span>.</span></h1>
+        <p>PlayBash turns local clips into ASCII art on Linux. Choose a rendering mode, add color, or make a video your Fastfetch logo.</p>
+        <a class="button" href="#install">Install PlayBash <span aria-hidden="true">↓</span></a>
+      </div>
+      <figure class="demo">
+        <div class="terminal-label"><span aria-hidden="true">&gt;_</span> PlayBash demo</div>
+        <video aria-label="Silent demo of ASCII playback and the animated Fastfetch logo" controls playsinline preload="none" width="720" height="540" poster="media/demo-poster.webp">
+          <source src="media/playbash-demo.mp4" type="video/mp4">
+        </video>
+        <figcaption>ASCII playback followed by the animated Fastfetch logo. <a href="media/playbash-demo.mp4">Open MP4</a></figcaption>
+      </figure>
+    </section>
+
+    <section id="modes" class="section" aria-labelledby="mode-title">
+      <div class="section-head">
+        <h2 id="mode-title">Rendering modes</h2>
+        <p>Three ways to draw the same frame.</p>
+      </div>
+      <div class="gallery">
+        <figure><img src="media/classic.png" width="1020" height="1040" loading="lazy" alt="A face and hair drawn with the classic ASCII palette"><figcaption><code>classic</code><span>Compact ASCII palette</span></figcaption></figure>
+        <figure><img src="media/dense.png" width="1020" height="1040" loading="lazy" alt="The same face drawn with dense ASCII punctuation, letters, and digits"><figcaption><code>dense</code><span>Printable ASCII palette</span></figcaption></figure>
+        <figure><img src="media/blocks.png" width="1020" height="1040" loading="lazy" alt="The same face drawn with four shades of block characters"><figcaption><code>blocks</code><span>Shaded block characters</span></figcaption></figure>
+      </div>
+      <figure class="chart" aria-labelledby="chart-title" aria-describedby="chart-note">
+        <figcaption id="chart-title">Symbols per mode</figcaption>
+        <p id="chart-note"><code>dense</code> has the widest palette. Counts exclude spaces and come from the renderer’s character sets.</p>
+        <div class="bars" aria-hidden="true">
+          <div><code>dense</code><span class="track"><span style="--count:94"></span></span><b>94</b></div>
+          <div><code>hex</code><span class="track"><span style="--count:16"></span></span><b>16</b></div>
+          <div><code>classic</code><span class="track"><span style="--count:13"></span></span><b>13</b></div>
+          <div><code>blocks</code><span class="track"><span style="--count:4"></span></span><b>4</b></div>
+          <div><code>matrix</code><span class="track"><span style="--count:4"></span></span><b>4</b></div>
+          <div><code>binary</code><span class="track"><span style="--count:2"></span></span><b>2</b></div>
+          <div class="axis"><span></span><span><span>0</span><span>50</span><span>100</span></span></div>
+        </div>
+        <details>
+          <summary>View symbol counts as a table</summary>
+          <table>
+            <thead><tr><th scope="col">Mode</th><th scope="col">Symbols excluding spaces</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Dense</th><td>94</td></tr><tr><th scope="row">Hex</th><td>16</td></tr>
+              <tr><th scope="row">Classic</th><td>13</td></tr><tr><th scope="row">Blocks</th><td>4</td></tr>
+              <tr><th scope="row">Matrix</th><td>4</td></tr><tr><th scope="row">Binary</th><td>2</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </figure>
+    </section>
+
+    <section id="install" class="section" aria-labelledby="install-title">
+      <div class="section-head">
+        <h2 id="install-title">Install and play</h2>
+        <p>Linux, Bash, Git, and Python 3.10+ with pip and venv.</p>
+      </div>
+      <div class="commands">
+        <div>
+          <h3>Install</h3>
+          <pre><code>git clone https://github.com/thmanmr976-dot/PlayBash.git
+cd PlayBash
+bash install.sh
+export PATH="$HOME/.local/bin:$PATH"
+playbash version</code></pre>
+        </div>
+        <div>
+          <h3>Open a clip</h3>
+          <p>Replace <code>/path/to/video.mp4</code> with a local file.</p>
+          <pre><code>playbash add "/path/to/video.mp4"
+playbash list
+playbash run 1 --mode dense</code></pre>
+          <p>Press <kbd>q</kbd> to stop. Enable video colors with <code>playbash config --color</code>.</p>
+        </div>
+        <div>
+          <h3>Animate the Fastfetch logo</h3>
+          <p>Requires Fastfetch, FFmpeg and ffprobe.</p>
+          <pre><code>playbash fastfetch 1 --adjust</code></pre>
+          <p>Use the arrows and <kbd>+</kbd>/<kbd>−</kbd> to frame the clip. Press <kbd>Enter</kbd> to save it as your default logo.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="shell footer">
+    <a href="https://github.com/thmanmr976-dot/PlayBash">Source on GitHub ↗</a>
+    <a href="https://github.com/thmanmr976-dot/PlayBash#readme">Command documentation ↗</a>
+  </footer>
+</body>
+</html>

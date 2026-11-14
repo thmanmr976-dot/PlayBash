@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-labelledby="title desc">
+  <title id="title">PlayBash</title>
+  <desc id="desc">ASCII video in your Linux terminal</desc>
+  <rect width="1280" height="320" rx="24" fill="#1b1b1b"/>
+  <path d="M0 296h1280v24H0z" fill="#f8a57b"/>
+  <g font-family="ui-monospace, Menlo, Consolas, monospace">
+    <text x="72" y="155" font-size="94" font-weight="700" fill="#fff7eb">PlayBash</text>
+    <text x="77" y="218" font-size="26" fill="#f5c5ab">ASCII video in your Linux terminal</text>
+    <text x="1020" y="185" font-size="76" font-weight="700" fill="#f8a57b">&gt;_</text>
+  </g>
+</svg>

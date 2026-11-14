@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from playbash.cli.parser import create_parser
-from playbash.core.player import play
 
 from playbash.library import (
     add_video,
@@ -28,7 +27,11 @@ def main():
 
     if args.command == "add":
 
-        if add_video(args.video):
+        try:
+            added = add_video(args.video)
+        except (ValueError, OSError) as error:
+            parser.exit(1, f"playbash: {error}\n")
+        if added:
             print("✓ Video added successfully.")
         else:
             print("Video already exists.")
@@ -87,17 +90,41 @@ def main():
 
             target = video
 
-        if not Path(target).exists():
+        if not Path(target).expanduser().is_file():
             print("Video not found.")
             return
 
-        set_last_video(target)
+        target = str(Path(target).expanduser().resolve())
+        if get("remember_last_video"):
+            set_last_video(target)
 
-        play(
-            target,
-            mode=args.mode,
-            fps=args.fps
-        )
+        try:
+            from playbash.core.player import play
+            play(target, mode=args.mode, fps=args.fps)
+        except (ValueError, OSError) as error:
+            parser.exit(1, f"playbash: {error}\n")
+        except KeyboardInterrupt:
+            return
+
+    elif args.command == "fastfetch":
+        from playbash.core.fastfetch import show_fastfetch
+        target = args.video
+        if args.adjust and target is None:
+            parser.error("fastfetch --adjust requires a video path or library index")
+        try:
+            if args.reset_logo:
+                from playbash.core.logo_default import reset_default_logo
+                reset_default_logo()
+                return
+            if target is not None and target.isdecimal():
+                target = get_video(int(target) - 1)
+                if target is None:
+                    parser.exit(1, "playbash: Invalid library index. Use playbash list to see video numbers.\n")
+            show_fastfetch(target, stop=args.stop, adjust=args.adjust)
+        except (ValueError, OSError) as error:
+            parser.exit(1, f"playbash: {error}\n")
+        except KeyboardInterrupt:
+            return
 
     elif args.command == "config":
 
@@ -115,6 +142,14 @@ def main():
 
         if args.fps:
             set("fps", args.fps)
+            changed = True
+
+        if args.loop is not None:
+            set("loop", args.loop)
+            changed = True
+
+        if args.color is not None:
+            set("color", args.color)
             changed = True
 
         if changed:

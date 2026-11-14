@@ -1,6 +1,8 @@
 {
-    "mode": "dense",
+    "mode": "classic",
+    "color": false,
     "fps": 30,
+    "loop": true,
     "remember_last_video": true,
     "clear_on_exit": true,
     "hide_cursor": true

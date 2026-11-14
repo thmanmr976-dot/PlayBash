@@ -11,7 +11,9 @@ DATA_DIR.mkdir(exist_ok=True)
 
 DEFAULT_CONFIG = {
     "mode": "classic",
+    "color": False,
     "fps": 30,
+    "loop": True,
     "remember_last_video": True,
     "clear_on_exit": True,
     "hide_cursor": True
@@ -28,7 +30,7 @@ def load():
 
     with open(CONFIG_FILE, "r") as f:
 
-        return json.load(f)
+        return {**DEFAULT_CONFIG, **json.load(f)}
 
 
 def save(config):

@@ -1,6 +1,13 @@
 import argparse
 
 
+def positive_fps(value):
+    value = int(value)
+    if value <= 0:
+        raise argparse.ArgumentTypeError("FPS must be greater than zero")
+    return value
+
+
 def create_parser():
 
     parser = argparse.ArgumentParser(
@@ -43,10 +50,20 @@ def create_parser():
     run.add_argument(
         "-f",
         "--fps",
-        type=int,
+        type=positive_fps,
         default=None,
         help="Playback FPS"
     )
+
+    fastfetch = subparsers.add_parser(
+        "fastfetch", help="Loop a video in the Fastfetch logo area"
+    )
+    logo_action = fastfetch.add_mutually_exclusive_group()
+    logo_action.add_argument("video", nargs="?", help="Video path or index from playbash list")
+    logo_action.add_argument("--stop", action="store_true", help="Stop the animated logo in this terminal")
+    logo_action.add_argument("--reset-logo", action="store_true", help="Restore the original Fastfetch logo")
+    fastfetch.add_argument("--adjust", action="store_true",
+                           help="Move and zoom the video before saving it with Enter")
 
     # ---------------- ADD ----------------
 
@@ -105,7 +122,17 @@ def create_parser():
 
     config.add_argument(
         "--fps",
-        type=int
+        type=positive_fps
+    )
+
+    config.add_argument(
+        "--loop", action=argparse.BooleanOptionalAction,
+        help="Enable or disable automatic replay (enabled by default)"
+    )
+
+    config.add_argument(
+        "--color", action=argparse.BooleanOptionalAction,
+        help="Show video colors in every rendering mode, including Fastfetch"
     )
 
     config.add_argument(

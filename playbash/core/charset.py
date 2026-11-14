@@ -1,10 +1,13 @@
+from string import ascii_letters, digits, punctuation
+
+
 CHARSETS = {
 
     "classic":
-        "@%#*+=-:. ",
+        "@%#*+=-:_|/\\. ",
 
     "dense":
-        "$@B%8&WM#*oahkbdpqwmZO0QLCJUXYzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ",
+        ascii_letters + digits + punctuation + " ",
 
     "blocks":
         "█▓▒░ ",
