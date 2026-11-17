@@ -496,9 +496,9 @@ def _relay(input_fd, output, pid, master, control, viewport, animation, geometry
         advance = time.monotonic() >= deadline
         if animating and viewport.active and not stopped and (advance or changed):
             if advance:
-                # Schedule from the frame's start, so rasterization and PTY
-                # writes use part of its time slot instead of extending it.
-                deadline = time.monotonic() + gap
+                # Keep the playback timeline across small scheduling delays.
+                # A long stall starts a fresh slot instead of a catch-up burst.
+                deadline = max(deadline + gap, time.monotonic())
             if viewport.visible_rows() is not None:
                 output.write(_paint(viewport, animation, graphics, frame if advance else frame - 1))
                 output.flush()

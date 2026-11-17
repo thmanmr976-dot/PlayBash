@@ -25,6 +25,9 @@ from playbash.core.logo_shell import confirm_native_logo, run_logo_shell, stop_l
 from playbash.core.input import PlaybackStopped
 from playbash.core.renderer import ansi_lines
 from playbash.settings import load as load_settings
+from playbash.core.logo_cache import (
+    CachedLogo, cache_path, load_cached_logo, save_cached_logo, raster_size, symbol_scale,
+)
 
 
 IMAGE_ID = 0x50424C47
@@ -273,13 +276,16 @@ class RasterLogo:
     """Replace one graphics placement as the video plays or the framing changes."""
 
     def __init__(self, layout, animation, grid, mode, *, adjust=False):
-        from playbash.core.logo_video import GlyphRaster, raster_size
-
         self.logo = layout.logo
         self.width, self.height = raster_size(self.logo, grid)
         self.animation = animation
-        self.raster = GlyphRaster(mode, (self.width, self.height))
-        self.encoded = None if adjust else tuple(_raster_frames(animation.frames, self.raster))
+        if isinstance(animation, CachedLogo):
+            self.raster = None
+            self.encoded = animation.frames
+        else:
+            from playbash.core.logo_video import GlyphRaster
+            self.raster = GlyphRaster(mode, (self.width, self.height))
+            self.encoded = None if adjust else tuple(_raster_frames(animation.frames, self.raster))
 
     def _encode(self, frame):
         return _encode_pixels(self.raster.pixels(frame))
@@ -315,12 +321,14 @@ class RasterLogo:
 
 
 def _display_kitty(layout, animation, grid, mode, *, save=None):
-    from playbash.core.logo_video import GlyphRaster, raster_size
-
     width, height = raster_size(layout.logo, grid)
-    raster = GlyphRaster(mode, (width, height))
+    if isinstance(animation, CachedLogo):
+        encoded_frames = animation.frames
+    else:
+        from playbash.core.logo_video import GlyphRaster
+        encoded_frames = _raster_frames(animation.frames, GlyphRaster(mode, (width, height)))
     with tempfile.TemporaryFile() as frames:
-        for index, encoded in enumerate(_raster_frames(animation.frames, raster)):
+        for index, encoded in enumerate(encoded_frames):
             _send_frame(frames, encoded, width, height, animation.gap_ms, index == 0)
         frames.write(_graphics(f"a=a,i={IMAGE_ID},r=1,z={animation.gap_ms},q=2"))
         if Grid.current() != grid:
@@ -346,6 +354,35 @@ def _display_kitty(layout, animation, grid, mode, *, save=None):
         except PlaybackStopped:
             output.write(_delete_logo())
             output.flush()
+
+
+def prepare_logo(path, logo, grid, mode, scale, color, framing, raster, *, adjust=False):
+    cached_path = None
+    if not adjust:
+        try:
+            cached_path = cache_path(path, logo, grid, mode, scale, color, framing, raster)
+            cached = load_cached_logo(cached_path)
+            if cached is not None:
+                return cached
+        except OSError:
+            pass
+    from playbash.core.logo_video import GlyphRaster, prepare_video
+
+    animation = prepare_video(path, logo, grid, mode, scale, adjust=adjust, color=color, framing=framing)
+    if adjust:
+        return animation
+    try:
+        width, height = raster_size(logo, grid)
+        if raster:
+            frames = tuple(_raster_frames(animation.frames, GlyphRaster(mode, (width, height))))
+        else:
+            frames = tuple("\n".join(ansi_lines(frame)).encode("utf-8") for frame in animation.frames)
+        prepared = CachedLogo(frames, animation.gap_ms, width, height, raster)
+    finally:
+        animation.release_frames()
+    if cached_path is not None:
+        save_cached_logo(cached_path, prepared)
+    return prepared
 
 
 def show_fastfetch(video=None, stop=False, *, adjust=False):
@@ -375,8 +412,6 @@ def show_fastfetch(video=None, stop=False, *, adjust=False):
         raise ValueError("Animated logos need ffmpeg and ffprobe on PATH.")
     if not sys.stdin.isatty() or not sys.stdout.isatty():
         raise ValueError("Run animated Fastfetch in an interactive terminal.")
-    from playbash.core.logo_video import prepare_video, symbol_scale
-
     grid = Grid.current()
     layout = _get_layout(executable, grid)
     settings = load_settings()
@@ -386,9 +421,7 @@ def show_fastfetch(video=None, stop=False, *, adjust=False):
     konsole = _in_konsole() and not (os.environ.get("TMUX") or os.environ.get("STY"))
     scale = symbol_scale(layout.logo, grid) if kitty or konsole else 1
     raster = kitty or (konsole and scale > 1)
-    encode = ansi_lines if color and not raster and not adjust else None
-    animation = prepare_video(path, layout.logo, grid, mode, scale, adjust=adjust, color=color, encode=encode,
-                              framing=framing)
+    animation = prepare_logo(path, layout.logo, grid, mode, scale, color, framing, raster, adjust=adjust)
 
     def save():
         try:

@@ -5,6 +5,8 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
+from playbash.core.charset import BLOCK_SHAPES, EDGE_SEGMENTS
+
 # The 1:2 grid approximates a terminal cell's shape. A cell still produces
 # one ASCII character; these samples distinguish e.g. '/' from '\\' or '|'.
 _SAMPLE_WIDTH = 3
@@ -22,6 +24,40 @@ def _ordered_thresholds():
 
 
 _THRESHOLDS = _ordered_thresholds()
+
+
+def draw_edge_stroke(symbol, width, height):
+    image = Image.new("L", (width, height))
+    draw = ImageDraw.Draw(image)
+    for segment in EDGE_SEGMENTS[symbol]:
+        points = [(round(x * (width - 1)), round(y * (height - 1)))
+                  for x, y in zip(segment[::2], segment[1::2])]
+        draw.line(points, fill=255, width=max(1, round(width / 6)))
+    return image
+
+
+@lru_cache(maxsize=5)
+def _stroke_templates(strokes):
+    masks = np.array([
+        np.asarray(draw_edge_stroke(symbol, 18, 36).resize((3, 6), Image.Resampling.BOX)).ravel()
+        for symbol in strokes
+    ], dtype=np.float32)
+    masks -= masks.mean(axis=1, keepdims=True)
+    masks /= np.linalg.norm(masks, axis=1, keepdims=True)
+    return np.ascontiguousarray(masks.T)
+
+
+def _apply_edge_strokes(indices, dark_patches, ranges, offset, strokes):
+    cells = np.flatnonzero(ranges >= .24)
+    if not len(cells):
+        return
+    patches = dark_patches[cells]
+    patches -= patches.mean(axis=1, keepdims=True)
+    patches /= np.linalg.norm(patches, axis=1, keepdims=True)
+    scores = patches @ _stroke_templates(strokes)
+    best = scores.argmax(axis=1)
+    matched = scores[np.arange(len(best)), best] >= .60
+    indices[cells[matched]] = offset + best[matched]
 
 
 @lru_cache(maxsize=6)
@@ -104,7 +140,7 @@ def _contours(patches, means, ranges):
     return edges, centered
 
 
-def render_ascii_shapes(gray, width, height, palette):
+def render_ascii_shapes(gray, width, height, palette, *, strokes=""):
     """Use darker source areas for denser glyphs, as in the original modes."""
     patches = _sample_cells(gray, width, height)
     np.subtract(255, patches, out=patches)
@@ -125,10 +161,13 @@ def render_ascii_shapes(gray, width, height, palette):
     if " " in palette:
         flat_highlights = (means <= (255 - _NEAR_WHITE) / 255) & (ranges <= _FLAT_HIGHLIGHT_RANGE / 255)
         indices[flat_highlights] = palette.index(" ")
+    if strokes:
+        _apply_edge_strokes(indices, patches, ranges, len(palette), strokes)
+        palette += strokes
     return _text_lines(palette, indices, width)
 
 
-def render_ordered_palette(gray, width, height, palette):
+def render_ordered_palette(gray, width, height, palette, *, block_shapes=False, strokes=""):
     """Preserve the palette's dark-to-light order while keeping fine edges."""
     patches = _sample_cells(gray, width, height)
     patches /= 255
@@ -166,4 +205,17 @@ def render_ordered_palette(gray, width, height, palette):
         palette += " "
     flat_highlights = (means >= _NEAR_WHITE / 255) & (ranges <= _FLAT_HIGHLIGHT_RANGE / 255)
     indices[flat_highlights] = palette.index(" ")
+    if block_shapes:
+        cells = patches.reshape(-1, 6, 3)
+        # Split the middle sample across both halves of the cell.
+        halves = (2 * cells[:, :, (0, 2)] + cells[:, :, 1:2]) / 3
+        quadrants = halves.reshape(-1, 2, 3, 2).mean(axis=2).reshape(-1, 4)
+        low, high = quadrants.min(axis=1), quadrants.max(axis=1)
+        shaped = (high - low >= .22) & (high >= .65)
+        mask = (quadrants[shaped] < ((low[shaped] + high[shaped]) / 2)[:, None]) @ np.array([1, 2, 4, 8])
+        indices[shaped] = len(palette) + mask - 1
+        palette += BLOCK_SHAPES
+    if strokes:
+        _apply_edge_strokes(indices, -patches, ranges, len(palette), strokes)
+        palette += strokes
     return _text_lines(palette, indices, width)

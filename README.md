@@ -21,6 +21,10 @@ PlayBash plays local videos as ASCII art in a Linux terminal and can turn the Fa
 - A local video library with numbered entries and a shortcut to the last played video.
 - Animated Fastfetch logos with zoom, positioning, and a saved default.
 
+## New in v0.9.1
+
+Cached Fastfetch logos start with **about 92% less waiting (12.8× startup speedup)** in a local benchmark: 2.80 s before caching versus 0.22 s on repeat opens. The first open for a new video or layout still prepares its frames. All six modes have expanded symbol sets: classic 21, dense 103, blocks 18, matrix 9, hex 20, and binary 6, excluding spaces. See the [release notes and measurement details](CHANGELOG.md).
+
 ## Quickstart
 
 Use Linux with Bash, Git, and Python 3.10 or newer with pip and venv. The installer creates `.venv` and a launcher at `~/.local/bin/playbash`.

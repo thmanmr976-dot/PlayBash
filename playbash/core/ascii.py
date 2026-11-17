@@ -1,6 +1,6 @@
 import cv2
 
-from playbash.core.charset import CHARSETS
+from playbash.core.charset import BASE_CHARSETS, BLOCK_SHADES, EDGE_STROKES
 from playbash.core.glyphs import render_ascii_shapes, render_ordered_palette
 
 
@@ -11,10 +11,13 @@ def frame_to_ascii(frame, width, height, mode):
 
 
 def gray_to_ascii(gray, width, height, mode):
-    palette = CHARSETS[mode]
+    palette = BASE_CHARSETS[mode]
+    strokes = EDGE_STROKES.get(mode, "")
     if mode in ("classic", "dense"):
-        return render_ascii_shapes(gray, width, height, palette)
-    return render_ordered_palette(gray, width, height, palette)
+        return render_ascii_shapes(gray, width, height, palette, strokes=strokes)
+    if mode == "blocks":
+        return render_ordered_palette(gray, width, height, BLOCK_SHADES, block_shapes=True)
+    return render_ordered_palette(gray, width, height, palette, strokes=strokes)
 
 
 def cell_colors(frame, width, height, *, bgr=False):

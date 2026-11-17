@@ -12,8 +12,10 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from playbash.core.ascii import cell_colors, frame_to_ascii, gray_to_ascii
-from playbash.core.charset import CHARSETS
+from playbash.core.charset import BLOCK_QUADRANTS, BLOCK_SHAPES, CHARSETS, EDGE_SEGMENTS
+from playbash.core.glyphs import draw_edge_stroke
 from playbash.core.renderer import ColoredFrame
+from playbash.core.logo_cache import cell_ratio, raster_size, symbol_scale
 
 
 MAX_FRAME_BYTES = 256 * 1024 * 1024
@@ -72,26 +74,6 @@ def _video_info(video):
     except (ValueError, TypeError):
         duration = 0
     return VideoInfo(width, height, aspect, duration)
-
-
-def cell_ratio(grid):
-    if grid.pixel_width and grid.pixel_height:
-        return (grid.pixel_width / grid.columns) / (grid.pixel_height / grid.rows)
-    return 0.5
-
-
-def raster_size(logo, grid):
-    cell_height = grid.pixel_height / grid.rows if grid.pixel_height else 16
-    width = logo.columns * cell_height * cell_ratio(grid)
-    height = logo.rows * cell_height
-    scale = min(1.0, 512 / max(width, height))
-    return max(2, round(width * scale)), max(2, round(height * scale))
-
-
-def symbol_scale(logo, grid):
-    """Double the grid where the raster has enough pixels per small glyph."""
-    width, height = raster_size(logo, grid)
-    return max(1, min(2, width // (logo.columns * 3), height // (logo.rows * 5)))
 
 
 def _cover_dimensions(source_aspect, target_aspect):
@@ -377,6 +359,13 @@ class GlyphRaster:
                 coverage = {"█": 4, "▓": 3, "▒": 2, "░": 1}[symbol]
                 yy, xx = np.indices((self.height, self.width))
                 tile = np.where(((xx + yy * 3) % 4) < coverage, 255, 0).astype(np.uint8)
+            elif symbol in EDGE_SEGMENTS:
+                tile = np.asarray(draw_edge_stroke(symbol, self.width, self.height))
+            elif symbol in BLOCK_SHAPES:
+                mask = BLOCK_QUADRANTS.index(symbol)
+                y, x = np.indices((self.height, self.width))
+                quadrant = (x >= self.width // 2).astype(int) + 2 * (y >= self.height // 2)
+                tile = (((mask >> quadrant) & 1) * 255).astype(np.uint8)
             else:
                 image = Image.new("L", (self.width, self.height))
                 ImageDraw.Draw(image).text((0, 0), symbol, font=font, fill=255)

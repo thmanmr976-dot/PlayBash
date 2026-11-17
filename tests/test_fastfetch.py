@@ -22,6 +22,7 @@ import zlib
 import numpy as np
 
 from playbash.core.charset import CHARSETS
+from playbash.core.logo_cache import CachedLogo, cache_path, load_cached_logo, save_cached_logo
 from playbash.core.fastfetch import Grid, Layout, Logo, RasterLogo, measure_logo, prepare_layout, show_fastfetch
 from playbash.core.logo_default import load_default_logo, native_fastfetch, reset_default_logo, save_default_logo
 from playbash.core.logo_video import AdjustableAnimation, GlyphRaster, LogoAnimation, prepare_video, raster_size, symbol_scale
@@ -30,6 +31,33 @@ from playbash.core.renderer import ColoredFrame
 
 
 class FastfetchLayoutTests(unittest.TestCase):
+    def test_cache_rejects_incomplete_and_corrupt_frames(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "test.pbl"
+            animation = CachedLogo((b"compressed frame", b"another frame"), 83, 48, 32, True)
+            save_cached_logo(path, animation)
+            self.assertEqual(load_cached_logo(path), animation)
+            valid = path.read_bytes()
+            path.write_bytes(valid[:-1])
+            self.assertIsNone(load_cached_logo(path))
+            corrupt = bytearray(valid)
+            corrupt[-33] ^= 1
+            path.write_bytes(corrupt)
+            self.assertIsNone(load_cached_logo(path))
+
+    def test_cache_limit_evicts_old_entries_and_readonly_cache_is_optional(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            animation = CachedLogo((b"abc" * 100,), 83, 48, 32, True)
+            with patch("playbash.core.logo_cache.MAX_CACHE_BYTES", 500):
+                save_cached_logo(root / "old.pbl", animation)
+                save_cached_logo(root / "new.pbl", animation)
+                self.assertIsNone(load_cached_logo(root / "old.pbl"))
+                self.assertEqual(load_cached_logo(root / "new.pbl"), animation)
+            with patch("playbash.core.logo_cache.tempfile.NamedTemporaryFile", side_effect=PermissionError):
+                save_cached_logo(root / "unwritable.pbl", animation)
+            self.assertEqual(load_cached_logo(root / "new.pbl"), animation)
+
     def test_missing_fastfetch_is_reported_before_using_terminal(self):
         with patch("playbash.core.fastfetch.shutil.which", return_value=None):
             with self.assertRaisesRegex(ValueError, "Fastfetch is not installed"):
@@ -215,6 +243,32 @@ class FastfetchShellTests(unittest.TestCase):
              "-threads", "1", str(video)], check=True, timeout=10,
         )
         return video
+
+    def test_warm_logo_cache_skips_decoding_and_rasterization_in_all_modes(self):
+        from playbash.core.fastfetch import prepare_logo
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            video = self.make_fixture(root)
+            logo, grid = Logo(6, 3), Grid(100, 32, 900, 640)
+            with patch.dict(os.environ, XDG_CACHE_HOME=str(root)):
+                for mode in CHARSETS:
+                    for raster in (False, True):
+                        with self.subTest(mode=mode, raster=raster):
+                            cold = prepare_logo(video, logo, grid, mode, 2 if raster else 1,
+                                                True, None, raster)
+                            with patch("playbash.core.logo_video.prepare_video", side_effect=AssertionError("decoded again")), \
+                                 patch("playbash.core.fastfetch._encode_pixels", side_effect=AssertionError("rasterized again")):
+                                warm = prepare_logo(video, logo, grid, mode, 2 if raster else 1,
+                                                    True, None, raster)
+                            self.assertEqual(cold, warm)
+                            if not raster:
+                                self.assertIn("\x1b[38;2;", "".join(warm.frame(0)))
+                key = cache_path(video, logo, grid, "dense", 2, True, None, True)
+                self.assertNotEqual(key, cache_path(video, logo, grid, "dense", 2, False, None, True))
+                self.assertNotEqual(key, cache_path(video, logo, grid, "dense", 2, True, (1.2, 0, 0), True))
+                self.assertNotEqual(key, cache_path(video, Logo(8, 3), grid, "dense", 2, True, None, True))
+                video.touch()
+                self.assertNotEqual(key, cache_path(video, logo, grid, "dense", 2, True, None, True))
 
     def test_denser_video_uses_same_pixels_with_four_times_as_many_cells(self):
         with tempfile.TemporaryDirectory(prefix="playbash-logo-density-") as folder:

@@ -70,7 +70,7 @@ class ASCIIRenderingTests(unittest.TestCase):
         renderer.render(ColoredFrame(("X",), red))
         self.assertEqual(output.getvalue()[drawn:], "\x1b[2J\x1b[H\x1b[38;2;255;0;0mX\x1b[39m\x1b[2;1H")
 
-    def test_classic_and_dense_output_printable_ascii_at_terminal_size(self):
+    def test_classic_and_dense_use_their_palettes_at_terminal_size(self):
         frame = np.random.default_rng(42).integers(0, 256, (31, 47, 3), dtype=np.uint8)
         for mode in ("classic", "dense"):
             for width, height in ((1, 1), (2, 1), (1, 3), (11, 7)):
@@ -78,7 +78,7 @@ class ASCIIRenderingTests(unittest.TestCase):
                     lines = frame_to_ascii(frame, width, height, mode)
                     self.assertEqual(len(lines), height)
                     self.assertTrue(all(len(line) == width for line in lines))
-                    self.assertTrue(all(" " <= ch <= "~" for line in lines for ch in line))
+                    self.assertTrue(set("".join(lines)) <= set(CHARSETS[mode]))
                     self.assertEqual(lines, frame_to_ascii(frame, width, height, mode))
 
     def test_flat_white_and_black_keep_original_polarity(self):
@@ -150,10 +150,11 @@ class ASCIIRenderingTests(unittest.TestCase):
         forward = np.full((60, 30, 3), 255, dtype=np.uint8)
         cv2.line(forward, (27, 4), (2, 55), (0, 0, 0), thickness=6)
         backward = np.ascontiguousarray(forward[:, ::-1])
-        for mode in ("classic", "dense"):
-            with self.subTest(mode=mode):
-                self.assertEqual(frame_to_ascii(forward, 1, 1, mode), ["/"])
-                self.assertEqual(frame_to_ascii(backward, 1, 1, mode), ["\\"])
+        for mode in CHARSETS:
+            if mode != "blocks":
+                with self.subTest(mode=mode):
+                    self.assertEqual(frame_to_ascii(forward, 1, 1, mode), ["╱"])
+                    self.assertEqual(frame_to_ascii(backward, 1, 1, mode), ["╲"])
 
     def test_stylized_modes_keep_original_palettes_and_dimensions(self):
         frame = np.random.default_rng(9).integers(0, 256, (19, 27, 3), dtype=np.uint8)
@@ -163,8 +164,17 @@ class ASCIIRenderingTests(unittest.TestCase):
                     lines = frame_to_ascii(frame, width, height, mode)
                     self.assertEqual(len(lines), height)
                     self.assertTrue(all(len(line) == width for line in lines))
-                    self.assertLessEqual(set("".join(lines)), set(palette + " "))
+                    self.assertLessEqual(set("".join(lines)), set(CHARSETS[mode] + " "))
                     self.assertEqual(lines, frame_to_ascii(frame, width, height, mode))
+
+    def test_blocks_distinguishes_edges_with_the_same_average_brightness(self):
+        frame = np.full((6, 12, 3), 245, dtype=np.uint8)
+        frame[:3, :3] = 20
+        frame[3:, 3:6] = 20
+        frame[:, 6] = 20
+        frame[:, 8] = 245
+        frame[:, 7] = 132
+        self.assertEqual(frame_to_ascii(frame, 4, 1, "blocks"), ["▀▄▌ "])
 
     def test_stylized_modes_follow_dark_to_light_palette_order(self):
         for mode, palette in STYLIZED_PALETTES.items():
